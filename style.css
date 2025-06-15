@@ -33,6 +33,16 @@ body {
   width: 200px;
   max-width: 100%;
 }
+#guest-category {
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor:pointer;
+  margin-left: 1%;
+  margin-right: 1%;
+  background-color: #fff;
+
+
+}
 
 #guest-form button {
   padding: 10px 16px;
@@ -43,6 +53,29 @@ body {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.guest-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e9ecef;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+
+}
+.guest-actions button{
+  margin-right:10px;
+  border-radius: 6px;
+  background-color: aqua;
+  height: 30px;
+
+}
+.guest-actions button:hover {
+  background-color: #ff7200;
+  color: white;
 }
 
 #guest-form button:hover {

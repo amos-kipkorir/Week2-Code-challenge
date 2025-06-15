@@ -1,62 +1,95 @@
+document.addEventListener('DOMContentLoaded', function (){
 const form = document.getElementById('guest-form');
-const guestInput = document.getElementById('guest-name');
+const nameInput = document.getElementById('guest-name');
+const categorySelect = document.getElementById('guest-category');
 const guestList = document.getElementById('guest-list');
+const guestCount = document.getElementById('guest-count');
 
 let guests = [];
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
 
-  const name = guestInput.value.trim();
+  const name = nameInput.value.trim();
+  const category = categorySelect.value;
+
   if (!name) return;
 
   if (guests.length >= 10) {
-    alert('Guest limit reached (10 guests max).');
+    alert('Guest list limit reached! (Max: 10)');
     return;
   }
 
   const guest = {
     id: Date.now(),
     name,
-    attending: false,
-    timestamp: new Date().toLocaleTimeString()
+    category,
+    attending: true,
+    timeAdded: new Date().toLocaleTimeString()
   };
 
   guests.push(guest);
-  guestInput.value = '';
-  renderGuests();
+  updateList();
+  form.reset();
 });
 
-function renderGuests() {
+function updateList() {
   guestList.innerHTML = '';
+  guestCount.textContent = `Guests: ${guests.length}/10`;
 
-  guests.forEach((guest) => {
+  guests.forEach(guest => {
     const li = document.createElement('li');
-    li.className = guest.attending ? 'attending' : '';
+    li.className = 'guest-item';
 
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'guest-info';
-    infoDiv.innerHTML = `<strong>${guest.name}</strong><br><small>Added at: ${guest.timestamp}</small>`;
+    const info = document.createElement('div');
+    info.className = 'guest-info';
+    info.innerHTML = `
+      <strong class="category-${guest.category}">${guest.name}</strong>
+      <small>${guest.category} • Added at ${guest.timeAdded}</small>
+      <small>Status: ${guest.attending ? 'Attending' : 'Not Attending'}</small>
+    `;
+    const actions = document.createElement('div');
+    actions.className = 'guest-actions';
 
-    const buttonDiv = document.createElement('div');
-    buttonDiv.className = 'buttons';
-
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.onclick = () => {
-      guests = guests.filter(g => g.id !== guest.id);
-      renderGuests();
-    };
-
-    const toggleRSVPBtn = document.createElement('button');
-    toggleRSVPBtn.textContent = guest.attending ? 'Un-RSVP' : 'RSVP';
-    toggleRSVPBtn.onclick = () => {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.textContent = 'Toggle RSVP';
+    toggleBtn.onclick = () => {
       guest.attending = !guest.attending;
-      renderGuests();
+      updateList();
+    };
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = guest.name;
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const newName = input.value.trim();
+          if (newName) {
+            guest.name = newName;
+            updateList();
+          }
+        }
+      });
+      info.innerHTML = '';
+      info.appendChild(input);
+      input.focus();
+    };
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Remove';
+    deleteBtn.onclick = () => {
+      guests = guests.filter(g => g.id !== guest.id);
+      updateList();
     };
 
-    buttonDiv.append(toggleRSVPBtn, removeBtn);
-    li.append(infoDiv, buttonDiv);
+    
+
+    actions.append(toggleBtn, editBtn, deleteBtn);
+    li.append(info, actions);
     guestList.appendChild(li);
   });
 }
+
+});
